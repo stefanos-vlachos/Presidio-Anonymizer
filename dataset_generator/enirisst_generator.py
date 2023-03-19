@@ -12,11 +12,11 @@ from datetime import timedelta
 #faker=Faker(locale='el_GR')
 faker = Faker()
 
-df_discount = pd.read_csv('../resources/scraped_data/discount_type.csv')
-df_harbors = pd.read_csv('../resources/scraped_data/harbors.csv')
-df_position = pd.read_csv('../resources/scraped_data/position.csv')
-df_shippers = pd.read_csv('../resources/scraped_data/shippers.csv')
-df_ships = pd.read_csv('../resources/scraped_data/ships_names.csv')
+df_discount = pd.read_csv('../resources/scraped_data/enirisst/discount_type.csv')
+df_harbors = pd.read_csv('../resources/scraped_data/enirisst/harbors.csv')
+df_position = pd.read_csv('../resources/scraped_data/enirisst/position.csv')
+df_shippers = pd.read_csv('../resources/scraped_data/enirisst/shippers.csv')
+df_ships = pd.read_csv('../resources/scraped_data/enirisst/ships_names.csv')
 
 numberOfRows = 1000
 generated_booking = dict()
@@ -56,7 +56,10 @@ def generate_passenger_info():
     generated_booking['gender'] = np.random.choice(["M", "F"], p=[0.5, 0.5])
     generated_booking['birth_date'] = generate_date(date(1970,12,27), date(2004,12,27))
     generated_booking['nationality'] = faker.country()
-    generated_booking['phone_number'] = faker.phone_number()
+    while True:
+        generated_booking['phone_number'] = faker.phone_number()
+        if "x" not in generated_booking['phone_number']:
+            break
 
     if generated_booking['gender']=='M':
         generated_booking['firstName'] = faker.first_name_male()
@@ -87,7 +90,7 @@ def main():
         generate_payment_info()
         produced_dataset = produced_dataset.append(generated_booking, ignore_index=True)
 
-    produced_dataset.to_csv('../resources/generator_output/custom_dataset.csv', sep=',')
+    produced_dataset.to_csv('../resources/generator_output/custom_enirisst_dataset.csv', sep=',', index=False)
 
 
 if __name__ == "__main__":

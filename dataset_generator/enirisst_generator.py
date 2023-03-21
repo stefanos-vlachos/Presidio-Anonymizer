@@ -18,7 +18,7 @@ df_position = pd.read_csv('../resources/scraped_data/enirisst/position.csv')
 df_shippers = pd.read_csv('../resources/scraped_data/enirisst/shippers.csv')
 df_ships = pd.read_csv('../resources/scraped_data/enirisst/ships_names.csv')
 
-numberOfRows = 1000
+numberOfRows = 100
 generated_booking = dict()
 
 

@@ -3,6 +3,9 @@ import operator
 import pandas as pd
 from presidio_analyzer import AnalyzerEngine, BatchAnalyzerEngine
 
+df_dataset = None
+
+
 def main(argv):
     input_dir = ''
     opts, args = getopt.getopt(argv,"i:",["ifile="])
@@ -10,8 +13,10 @@ def main(argv):
         if opt in ("-i", "--ifile"):
             input_dir = arg
 
-    if(analyzeFile(input_dir)==1):
-        anonymizeFile()
+    sensitive_columns =  analyzeFile(input_dir)
+    if not sensitive_columns.empty:
+        anonymizeFile(sensitive_columns)
+
 
 
 def analyzeFile(input_dir):
@@ -21,9 +26,9 @@ def analyzeFile(input_dir):
     print("####################################")
     print("\nPlease wait...\n")
 
-    df = pd.read_csv(input_dir, sep=',')
-    df_dict = df.to_dict(orient="list")
-    df_rows = len(df.index)
+    df_dataset = pd.read_csv(input_dir, sep=',')
+    df_dict = df_dataset.to_dict(orient="list")
+    df_rows = len(df_dataset.index)
     df_sensitive_columns = pd.DataFrame(columns=['columnName', 'mostFrequentEntity', 'percentage'])
 
     analyzer = AnalyzerEngine()
@@ -32,7 +37,6 @@ def analyzeFile(input_dir):
     analyzer_results = batch_analyzer.analyze_dict(df_dict, language="en")
     analyzer_results = list(analyzer_results)
 
-    output = ""
     for column in analyzer_results:
         column_entity_types = {}
         column_recognized_entities = column.recognizer_results
@@ -56,10 +60,11 @@ def analyzeFile(input_dir):
     print("Analysis results")
     print("====================================")
     print(df_sensitive_columns)
-    return 1
+    return df_sensitive_columns
 
 
-def anonymizeFile(df, df_df_sensitive_columns):
+
+def anonymizeFile(df_sensitive_columns):
     print("\n")
     print("########################################")
     print("Anonymization process has been initiated.")

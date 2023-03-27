@@ -3,7 +3,7 @@ import operator
 import pandas as pd
 import os
 import subprocess
-import re
+import ast
 import requests
 import time
 import json
@@ -262,7 +262,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
 
     #Create folder for bindings and save them
     bindings_dir = f"{root_dir}\\build\\bindings\\{input_file_name}"
-    binding_file = f"{input_file_name}_binding.txt"
+    binding_file = f"{input_file_name}_binding.json"
     binding_file_path = f'{bindings_dir}\\{binding_file}'
     if not os.path.exists(bindings_dir):
         os.makedirs(bindings_dir)
@@ -272,8 +272,43 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     with open(binding_file_path, 'wb') as f:
         f.write(response.content)
     print(response.text)
-    if ("Success" not in response.text):
+    if ("Solutions" not in response.text):
         return 0
+
+    #Anonymizing the dataset
+    print("\nAnonymizing the given dataset:")
+    print("====================================")
+
+    with open(binding_file_path, 'r') as f:
+        dict_str = f.read().replace('{"Solutions":', '').strip()[:-1]
+        my_dict = ast.literal_eval(dict_str)
+
+    last_safe = None
+    for key, value in my_dict.items():
+        if isinstance(value, dict):
+            if "result" in value and value["result"] == "safe":
+                if "levels" in value:
+                    last_safe = value["levels"]
+
+    if last_safe is not None:
+        last = last_safe.replace(" ","")
+
+    #Prepare request
+    payload = {
+        'sol': (None, last),
+    }
+
+    #Send request
+    response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
+    
+    #Create folder for anonymized files and save
+    anonymized_dir = f"{root_dir}\\build\\anonymization_results"
+    anonymized_file = f"{input_file_name}_anonymized.csv"
+    anonymized_file_path = f'{anonymized_dir}\\{anonymized_file}'
+    if not os.path.exists(anonymized_dir):
+        os.makedirs(anonymized_dir)
+    with open(anonymized_file_path, 'wb') as f:
+        f.write(response.content)
 
     return 1
 

@@ -20,6 +20,7 @@ configs = Properties()
 def main(argv):
     global df_dataset, configs, input_file_name
 
+    #Load properties
     with open('pipeline-config.properties', 'rb') as config_file:
         configs.load(config_file)
 
@@ -67,6 +68,7 @@ def analyzeFile():
 
     #Find number of entities per column and calculate percentage of most frequent entity
     for column in analyzer_results:
+        #Dict that keeps count of each entity
         column_entity_types = {}
         column_recognized_entities = column.recognizer_results
         for entity in column_recognized_entities:
@@ -77,10 +79,11 @@ def analyzeFile():
                 else:
                     column_entity_types[entity_type]=1
         if(column_entity_types):
+            #Find most frequent entity in the current column
             max_key = max(column_entity_types.items(), key=operator.itemgetter(1))[0]
             max_value = max(column_entity_types.values())
-            percentage_of_sensitivity = max_value / rows_number
             #Assume personal/sensitive column if percentage>0.5
+            percentage_of_sensitivity = max_value / rows_number
             if(percentage_of_sensitivity > 0.5):
                 #Handle DATE_TIME column type
                 if(max_key == "DATE_TIME"):
@@ -136,7 +139,6 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     #Get session ID and prepare requests metadata
     response = requests.post('http://localhost:8181/getSession')
     json_response = json.loads(response.text)
-
     session_id = json_response['Session_Id']
     cookies = {
         'JSESSIONID': f"{session_id}",
@@ -148,23 +150,23 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         'columnsType': (None, str_columns_to_anonymize),
     }
 
-    #Load dataset to Amnesia
+    #PHASE 1: LOADING DATA TO AMNESIA
     response = requests.post('http://localhost:8181/loadData', cookies=cookies, files=files, allow_redirects=True)
     print(response.text)
     if ("Success" not in response.text):
         return 0
     
-    #Create hierarchies
+    #PHASE 2: CREATING HIERARCHIES
     print("\nCreating Hierarchies:")
     print("====================================")
 
-    #Create folder for hierarchies and save them
+    #Create folder for hierarchies
     hierarchies_dir = f"{root_dir}\\build\\hierarchies\\"
     current_dataset_hierarchies_path = f"{hierarchies_dir}{input_file_name}"
     if not os.path.exists(current_dataset_hierarchies_path):
         os.makedirs(current_dataset_hierarchies_path)
 
-    #Initialize anonymization binding
+    #Initialize anonymization binding dictionary
     bind_dict = dict()
 
     #Create hierarchy for each sensitive column
@@ -226,13 +228,11 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
                 'fanout': (None,'3')
             }
 
-        #Send request
+        #Send request and save hierarchy to file
         response = requests.post('http://localhost:8181/generateHierarchy', cookies=cookies, files=payload, allow_redirects=True)
         if("Fail" in response.text):
             print(f"Failed to create hierarchy for {column_name}.")
             return 0
-        
-        #Save hierarchy
         hierarchy_file = f"hier_{column_name}_codes.txt"
         hierarchy_path = f"{current_dataset_hierarchies_path}\\{hierarchy_file}"
         with open(hierarchy_path, 'wb') as f:
@@ -240,7 +240,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
 
         print(f"Created hierarchy {hierarchy_file}")
 
-        #Load Hierarchy to Amnesia
+        #PHASE 3: LOADING HIERARCHIES TO AMNESIA        
         payload = {
             'hierarchies': open(hierarchy_path, 'rb'),
         }
@@ -248,7 +248,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         print(response.text)
         time.sleep(2)
 
-    #Binding hierarchies to columns
+    #PHASE 4: BINDING HIERARCHIES TO COLUMNS
     print("\nBinding Hierarchies to Columns:")
     print("====================================")
 
@@ -260,7 +260,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         'k': (None, k)
     }
 
-    #Create folder for bindings and save them
+    #Create folder for bindings
     bindings_dir = f"{root_dir}\\build\\bindings\\{input_file_name}"
     binding_file = f"{input_file_name}_binding.json"
     binding_file_path = f'{bindings_dir}\\{binding_file}'
@@ -275,7 +275,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     if ("Solutions" not in response.text):
         return 0
 
-    #Anonymizing the dataset
+    #PHASE 5: ANONYMIZING THE DATASET
     print("\nAnonymizing the given dataset:")
     print("====================================")
 
@@ -298,17 +298,19 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         'sol': (None, last),
     }
 
-    #Send request
-    response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
-    
-    #Create folder for anonymized files and save
+    #Create folder for anonymized files
     anonymized_dir = f"{root_dir}\\build\\anonymization_results"
     anonymized_file = f"{input_file_name}_anonymized.csv"
     anonymized_file_path = f'{anonymized_dir}\\{anonymized_file}'
     if not os.path.exists(anonymized_dir):
         os.makedirs(anonymized_dir)
+
+    #Send request and save
+    response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
     with open(anonymized_file_path, 'wb') as f:
         f.write(response.content)
+
+    print("Anonymization is complete!!")
 
     return 1
 

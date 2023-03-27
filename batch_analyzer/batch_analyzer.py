@@ -167,6 +167,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     #Initialize anonymization binding
     bind_dict = dict()
 
+    #Create hierarchy for each sensitive column
     for column_name in columns_to_anonymize:
         payload = None
         hierarchy_name = f'{column_name}_hier'

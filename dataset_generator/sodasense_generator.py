@@ -17,7 +17,7 @@ df_product = pd.read_csv('../resources/scraped_data/sodasense/product.csv')
 df_area = pd.read_csv('../resources/scraped_data/sodasense/area.csv')
 df_event = pd.read_csv('../resources/scraped_data/sodasense/event.csv')
 
-numberOfRows = 1000
+numberOfRows = 100
 generated_record = dict()
 
 #Initialize random sentece generator
@@ -51,6 +51,7 @@ def generate_measurement_info():
     generated_record['latitude'] = area_info['Longtitide'].iloc[0]
     generated_record['event'] = df_event.sample()['Event'].iloc[0]
     generated_record['description'] = s.sentence()
+    generated_record['date'] = generate_date(date(2020,12,31), date(2023,12,31))
 
 
 def main():

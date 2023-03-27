@@ -1,0 +1,17 @@
+distinct
+name Country_hier
+type string
+height 4
+
+Random0 has Belarus Canada Denmark 
+Random1 has Estonia Finland France 
+Random2 has Germany Great_Britain Latvia 
+Random3 has Lithuania Morocco Netherlands 
+Random4 has Nigeria Norway Russia 
+Random5 has Sweden 
+
+Random6 has Random0 Random1 Random2 
+Random7 has Random3 Random4 Random5 
+
+Random8 has Random6 Random7 NaN 
+

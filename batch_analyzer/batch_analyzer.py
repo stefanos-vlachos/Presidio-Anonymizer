@@ -3,7 +3,7 @@ import operator
 import pandas as pd
 import os
 import subprocess
-import ast
+import re
 import requests
 import time
 import json
@@ -35,12 +35,15 @@ def main(argv):
     #Get input dataset name
     input_file_name = input_dir.rsplit('\\', 1)[-1].rsplit('.csv')[0]
 
+    ########################################
     #Begin PIPELINE
-    #1) Analyze file and return sensitive/personal columns
+    ########################################
+
+    #Analyze file
     sensitive_columns =  analyzeFile()
-    #2) Prepate input file for aninymization
+    #Prepate input file for aninymization
     preprocessed_dir = preprocessFile(input_file_name)
-    #3) Anonymize file
+    #Anonymize file
     anonymizeFile(sensitive_columns, preprocessed_dir)
 
 
@@ -116,7 +119,9 @@ def preprocessFile(input_file_name):
 
 
 def anonymizeFile(df_sensitive_columns, preprocessed_dir):
-    global configs, root_dir, input_file_name
+    global configs, root_dir, input_file_name, df_dataset
+
+    df_anonymized = df_dataset.copy()
 
     print("\n")
     print("########################################")
@@ -143,20 +148,27 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     cookies = {
         'JSESSIONID': f"{session_id}",
     }
-    files = {
+
+    ########################################
+    #PHASE 1: LOADING DATA TO AMNESIA
+    ########################################
+
+    payload = {
         'file': open(preprocessed_dir,'rb'),
         'del': (None, ','),
         'datasetType': (None, 'tabular'),
         'columnsType': (None, str_columns_to_anonymize),
     }
 
-    #PHASE 1: LOADING DATA TO AMNESIA
-    response = requests.post('http://localhost:8181/loadData', cookies=cookies, files=files, allow_redirects=True)
+    response = requests.post('http://localhost:8181/loadData', cookies=cookies, files=payload, allow_redirects=True)
     print(response.text)
     if ("Success" not in response.text):
         return 0
     
+    ########################################
     #PHASE 2: CREATING HIERARCHIES
+    ########################################
+
     print("\nCreating Hierarchies:")
     print("====================================")
 
@@ -167,13 +179,13 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         os.makedirs(current_dataset_hierarchies_path)
 
     #Initialize anonymization binding dictionary
-    bind_dict = dict()
+    column_hierarchy_bindings = []
 
     #Create hierarchy for each sensitive column
     for column_name in columns_to_anonymize:
-        payload = None
         hierarchy_name = f'{column_name}_hier'
-        bind_dict[column_name] = hierarchy_name
+        column_hierarchy_bindings.append((column_name, hierarchy_name))
+        payload = None
         column_type = columns_to_anonymize[column_name]
         if(column_type=="date"):
             #Prepare date range hierarchy request
@@ -240,7 +252,10 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
 
         print(f"Created hierarchy {hierarchy_file}")
 
-        #PHASE 3: LOADING HIERARCHIES TO AMNESIA        
+        ########################################
+        #PHASE 3: LOADING HIERARCHIES TO AMNESIA 
+        ########################################
+
         payload = {
             'hierarchies': open(hierarchy_path, 'rb'),
         }
@@ -248,69 +263,113 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         print(response.text)
         time.sleep(2)
 
-    #PHASE 4: BINDING HIERARCHIES TO COLUMNS
+    ########################################################
+    #PHASE 4: BINDING HIERARCHIES TO COLUMNS AND ANONYMIZING
+    ########################################################
+
     print("\nBinding Hierarchies to Columns:")
     print("====================================")
 
-    #Prepare request
-    bind_dict_str = str(bind_dict).replace("\'", "\"").replace(" ", "")
-    k = int(configs.get("K").__getattribute__("data"))
-    payload = {
-        'bind': (None, bind_dict_str),
-        'k': (None, k)
-    }
+    ####################################
+    #1st Approach -- Grouped Bindings
+    ####################################
 
+    # #Create folder for bindings
+    # bindings_dir = f"{root_dir}\\build\\bindings\\{input_file_name}"
+    # binding_file = f"{input_file_name}_binding.json"
+    # binding_file_path = f'{bindings_dir}\\{binding_file}'
+    # if not os.path.exists(bindings_dir):
+    #     os.makedirs(bindings_dir)
+
+    # #Prepare request
+    # bind_dict_str = str(bind_dict).replace("\'", "\"").replace(" ", "")
+    # k = int(configs.get("K").__getattribute__("data"))
+    # payload = {
+    #     'bind': (None, bind_dict_str),
+    #     'k': (None, k)
+    # }
+
+    # #Send request and save response
+    # response = requests.post('http://localhost:8181/anonymization', cookies=cookies, files=payload)
+    # with open(binding_file_path, 'wb') as f:
+    #     f.write(response.content)
+    # print(response.text)
+    # if ("Solutions" not in response.text):
+    #     return 0
+
+    ####################################
+    #2nd Approach -- Seperate Bindings
+    ####################################
+
+    #BINDING
     #Create folder for bindings
-    bindings_dir = f"{root_dir}\\build\\bindings\\{input_file_name}"
-    binding_file = f"{input_file_name}_binding.json"
-    binding_file_path = f'{bindings_dir}\\{binding_file}'
+    bindings_dir = f"{root_dir}\\build\\bindings"
     if not os.path.exists(bindings_dir):
         os.makedirs(bindings_dir)
+    binding_file = f"{input_file_name}_binding.json"
+    binding_file_path = f'{bindings_dir}\\{binding_file}'
 
-    #Send request and save response
-    response = requests.post('http://localhost:8181/anonymization', cookies=cookies, files=payload)
-    with open(binding_file_path, 'wb') as f:
-        f.write(response.content)
-    print(response.text)
-    if ("Solutions" not in response.text):
-        return 0
-
-    #PHASE 5: ANONYMIZING THE DATASET
-    print("\nAnonymizing the given dataset:")
-    print("====================================")
-
-    with open(binding_file_path, 'r') as f:
-        dict_str = f.read().replace('{"Solutions":', '').strip()[:-1]
-        my_dict = ast.literal_eval(dict_str)
-
-    last_safe = None
-    for key, value in my_dict.items():
-        if isinstance(value, dict):
-            if "result" in value and value["result"] == "safe":
-                if "levels" in value:
-                    last_safe = value["levels"]
-
-    if last_safe is not None:
-        last = last_safe.replace(" ","")
+    #Create folder for anonymization
+    anonymization_dir = f"{root_dir}\\build\\anonymizations\\{input_file_name}"
+    if not os.path.exists(anonymization_dir):
+        os.makedirs(anonymization_dir)
 
     #Prepare request
-    payload = {
-        'sol': (None, last),
-    }
+    k = int(configs.get("K").__getattribute__("data"))
+    binding_results = dict()
 
-    #Create folder for anonymized files
-    anonymized_dir = f"{root_dir}\\build\\anonymization_results"
-    anonymized_file = f"{input_file_name}_anonymized.csv"
-    anonymized_file_path = f'{anonymized_dir}\\{anonymized_file}'
-    if not os.path.exists(anonymized_dir):
-        os.makedirs(anonymized_dir)
+    for column, hierarchy in column_hierarchy_bindings:
+        bind = str({column: hierarchy}).replace("\'", "\"").replace(" ", "")
+        payload = {
+            'bind': (None, bind),
+            'k': (None, k)
+        }
+        #Send request and save response
+        response = requests.post('http://localhost:8181/anonymization', cookies=cookies, files=payload)
+        binding_results[column] = json.loads(response.text)
 
-    #Send request and save
-    response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
-    with open(anonymized_file_path, 'wb') as f:
-        f.write(response.content)
+        if ("Solutions" not in response.text):
+            return 0
+        print(f"Binded succesfully {hierarchy} hierarchy to column {column}.")
 
+        #ΑΝΟΝΥΜΙΖΑΤΙΟΝ
+        column_solutions = json.loads(response.text)["Solutions"]
+        safe_solutions_levels = dict() 
+        for solution in column_solutions:
+            result = column_solutions[solution]["result"]
+            levels = column_solutions[solution]["levels"]
+            if result == "safe":
+                safe_solutions_levels[solution] = levels
+
+        selected_solution = min(safe_solutions_levels, key=safe_solutions_levels.get)
+        selected_levels = safe_solutions_levels[selected_solution]
+
+        payload = {
+            'sol': (None, selected_levels)
+        }
+        response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
+
+        anonymized_column_file = f"{input_file_name}_{column}_anonymized.csv"
+        anonymized_column_path = f'{anonymization_dir}\\{anonymized_column_file}'
+        with open(anonymized_column_path, 'wb') as f:
+            f.write(response.content)
+
+        df_anonymized_column = pd.read_csv(anonymized_column_path)
+        df_anonymized[column] = df_anonymized_column[column]
+
+
+    with open(binding_file_path, 'w+') as f:
+        f.write(str(binding_results).replace("\'", "\"").replace(" ", ""))
+
+    fully_anonymized_file = f"{input_file_name}_anonymized.csv"
+    anonymized_file_path = f'{anonymization_dir}\\{fully_anonymized_file}'
+    df_anonymized.to_csv(anonymized_file_path, index=False)
+
+    #Print analysis results
+    print("\nAnonymization results")
+    print("====================================")
     print("Anonymization is complete!!")
+    print(f"Check {fully_anonymized_file} in {anonymization_dir}.")
 
     return 1
 

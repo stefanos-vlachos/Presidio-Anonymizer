@@ -36,8 +36,8 @@ def main(argv):
     if(amnesiaStarted):
         anonymizationDone = anonymizeFile(sensitive_columns, preprocessed_dir)
     #Stop Amnesia
-    #if(anonymizationDone):
-    #    stopAmnesia()
+    if(anonymizationDone):
+       stopAmnesia()
 
 
 def loadDataset(argv):
@@ -363,8 +363,7 @@ def stopAmnesia():
         try:
             for conn in proc.info['connections']:
                 if conn.laddr.port == port:
-                    print(f"Process '{proc.info['name']}' (PID {proc.info['pid']}) is listening on port {port}")
-                    os.kill(proc.info['pid'], 9)
+                    proc.send_signal(psutil.signal.SIGTERM)
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
 

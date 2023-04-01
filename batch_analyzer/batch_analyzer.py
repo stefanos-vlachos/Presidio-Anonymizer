@@ -3,48 +3,53 @@ import operator
 import pandas as pd
 import os
 import subprocess
-import re
 import requests
 import time
 import json
+import psutil
 from jproperties import Properties
 from presidio_analyzer import AnalyzerEngine, BatchAnalyzerEngine
 
-df_dataset = None
-df_preprocessed = None
+
 root_dir = os.path.dirname(os.path.abspath(__file__))
 input_file_name = None
+df_dataset = None
+df_preprocessed = None
 configs = Properties()
 
 
 def main(argv):
-    global df_dataset, configs, input_file_name
-
     #Load properties
     with open('pipeline-config.properties', 'rb') as config_file:
         configs.load(config_file)
 
     #Load dataset from input directory
+    loadDataset(argv)
+    #Analyze file
+    sensitive_columns =  analyzeFile()
+    #Prepare input file for anonymization
+    preprocessed_dir = preprocessFile(input_file_name)
+    #Start Amnesia
+    amnesiaStarted = initiateAmnesia()
+    #Anonymize file
+    anonymizationDone = None
+    if(amnesiaStarted):
+        anonymizationDone = anonymizeFile(sensitive_columns, preprocessed_dir)
+    #Stop Amnesia
+    #if(anonymizationDone):
+    #    stopAmnesia()
+
+
+def loadDataset(argv):
+    global input_file_name, df_dataset, configs
+
     input_dir = None
     opts, args = getopt.getopt(argv,"i:",["ifile="])
     for opt, arg in opts:
         if opt in ("-i", "--ifile"):
             input_dir = arg
     df_dataset = pd.read_csv(input_dir, sep=',')
-
-    #Get input dataset name
     input_file_name = input_dir.rsplit('\\', 1)[-1].rsplit('.csv')[0]
-
-    ########################################
-    #Begin PIPELINE
-    ########################################
-
-    #Analyze file
-    sensitive_columns =  analyzeFile()
-    #Prepate input file for aninymization
-    preprocessed_dir = preprocessFile(input_file_name)
-    #Anonymize file
-    anonymizeFile(sensitive_columns, preprocessed_dir)
 
 
 def analyzeFile():
@@ -54,7 +59,7 @@ def analyzeFile():
     df_sensitive_columns = pd.DataFrame(columns=['columnName', 'columnType', 'mostFrequentEntity', 'percentage'])
     rows_number = len(df_dataset.index)
 
-    #Format column data types
+    #Find column data types
     column_datatypes = df_dataset.dtypes.replace("object","string").replace("bool","string").replace("category","string").replace("float64","double").replace("int64","int").replace("datetime64","date")
     
     print("\n")
@@ -71,7 +76,6 @@ def analyzeFile():
 
     #Find number of entities per column and calculate percentage of most frequent entity
     for column in analyzer_results:
-        #Dict that keeps count of each entity
         column_entity_types = {}
         column_recognized_entities = column.recognizer_results
         for entity in column_recognized_entities:
@@ -108,7 +112,6 @@ def preprocessFile(input_file_name):
     preprocessed_dir = f"{root_dir}\\build\\preprocessed_datasets\\"
     preprocessed_file_name = f"preprocessed_{input_file_name}"
     full_path = preprocessed_dir+preprocessed_file_name+".csv"
-
     if not os.path.exists(preprocessed_dir):
         os.makedirs(preprocessed_dir)
 
@@ -116,6 +119,17 @@ def preprocessFile(input_file_name):
     df_preprocessed = df_dataset.replace(', ', '-', regex=True).replace(' ', '_', regex=True)
     df_preprocessed.to_csv(full_path, sep=',', index=False, encoding='utf-8')
     return full_path
+
+
+def initiateAmnesia():
+    global configs
+
+    #Run Amnesia 
+    amnesia_installation_path = str(configs.get("AMNESIA_PATH").__getattribute__("data")).replace("\"", "")
+    os.chdir(amnesia_installation_path)
+    exec_command = ["java", "-Xms1024m", "-Xmx4096m", "-Dorg.eclipse.jetty.server.Request.maxFormKeys=1000000", "-Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000", "-jar", "amnesiaBackEnd-1.0-SNAPSHOT.jar", "--server.port=8181"]
+    subprocess.Popen(exec_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return True
 
 
 def anonymizeFile(df_sensitive_columns, preprocessed_dir):
@@ -128,12 +142,6 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     print("Anonymization process has been initiated.")
     print("########################################")
     print("\nPlease wait...\n")
-
-    #Run Amnesia 
-    # amnesia_installation_path = str(configs.get("AMNESIA_PATH").__getattribute__("data")).replace("\"", "")
-    # os.chdir(amnesia_installation_path)
-    # exec_command = ["java", "-Xms1024m", "-Xmx4096m", "-Dorg.eclipse.jetty.server.Request.maxFormKeys=1000000", "-Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000", "-jar", "amnesiaBackEnd-1.0-SNAPSHOT.jar", "--server.port=8181"]
-    # subprocess.Popen(exec_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     #Prepare columns to anonymize
     columns_to_anonymize = dict()
@@ -184,9 +192,9 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     #Create hierarchy for each sensitive column
     for column_name in columns_to_anonymize:
         hierarchy_name = f'{column_name}_hier'
+        column_type = columns_to_anonymize[column_name]
         column_hierarchy_bindings.append((column_name, hierarchy_name))
         payload = None
-        column_type = columns_to_anonymize[column_name]
         if(column_type=="date"):
             #Prepare date range hierarchy request
             payload = {
@@ -270,38 +278,6 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     print("\nBinding Hierarchies to Columns:")
     print("====================================")
 
-    ####################################
-    #1st Approach -- Grouped Bindings
-    ####################################
-
-    # #Create folder for bindings
-    # bindings_dir = f"{root_dir}\\build\\bindings\\{input_file_name}"
-    # binding_file = f"{input_file_name}_binding.json"
-    # binding_file_path = f'{bindings_dir}\\{binding_file}'
-    # if not os.path.exists(bindings_dir):
-    #     os.makedirs(bindings_dir)
-
-    # #Prepare request
-    # bind_dict_str = str(bind_dict).replace("\'", "\"").replace(" ", "")
-    # k = int(configs.get("K").__getattribute__("data"))
-    # payload = {
-    #     'bind': (None, bind_dict_str),
-    #     'k': (None, k)
-    # }
-
-    # #Send request and save response
-    # response = requests.post('http://localhost:8181/anonymization', cookies=cookies, files=payload)
-    # with open(binding_file_path, 'wb') as f:
-    #     f.write(response.content)
-    # print(response.text)
-    # if ("Solutions" not in response.text):
-    #     return 0
-
-    ####################################
-    #2nd Approach -- Seperate Bindings
-    ####################################
-
-    #BINDING
     #Create folder for bindings
     bindings_dir = f"{root_dir}\\build\\bindings"
     if not os.path.exists(bindings_dir):
@@ -330,6 +306,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
 
         if ("Solutions" not in response.text):
             return 0
+        
         print(f"Binded succesfully {hierarchy} hierarchy to column {column}.")
 
         #ΑΝΟΝΥΜΙΖΑΤΙΟΝ
@@ -347,20 +324,23 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         payload = {
             'sol': (None, selected_levels)
         }
-        response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
 
+        #Send request and save response
+        response = requests.post('http://localhost:8181/getSolution', cookies=cookies,  files=payload)
         anonymized_column_file = f"{input_file_name}_{column}_anonymized.csv"
         anonymized_column_path = f'{anonymization_dir}\\{anonymized_column_file}'
         with open(anonymized_column_path, 'wb') as f:
             f.write(response.content)
 
+        #Keep anonymized column
         df_anonymized_column = pd.read_csv(anonymized_column_path)
         df_anonymized[column] = df_anonymized_column[column]
 
-
+    #Store bindings
     with open(binding_file_path, 'w+') as f:
         f.write(str(binding_results).replace("\'", "\"").replace(" ", ""))
 
+    #Store fully anonymized dataset
     fully_anonymized_file = f"{input_file_name}_anonymized.csv"
     anonymized_file_path = f'{anonymization_dir}\\{fully_anonymized_file}'
     df_anonymized.to_csv(anonymized_file_path, index=False)
@@ -371,7 +351,23 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     print("Anonymization is complete!!")
     print(f"Check {fully_anonymized_file} in {anonymization_dir}.")
 
-    return 1
+    return True
+
+
+def stopAmnesia():
+    # Port to search for
+    port = 8181
+
+    # Find process ID of the process listening on the port
+    for proc in psutil.process_iter(['pid', 'name', 'connections']):
+        try:
+            for conn in proc.info['connections']:
+                if conn.laddr.port == port:
+                    print(f"Process '{proc.info['name']}' (PID {proc.info['pid']}) is listening on port {port}")
+                    os.kill(proc.info['pid'], 9)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

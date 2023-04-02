@@ -5,9 +5,9 @@ import os
 import re
 import subprocess
 import requests
-import time
 import json
 import psutil
+import math
 from jproperties import Properties
 from presidio_analyzer import AnalyzerEngine, BatchAnalyzerEngine
 
@@ -218,11 +218,17 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     #Initialize anonymization binding dictionary
     column_hierarchy_bindings = []
 
+    #Get fanout from properties
+    fanout = configs.get("FANOUT").__getattribute__("data")
+    string_anon_method = configs.get("STRING_ANON_METHOD").__getattribute__("data")
+
     #Create hierarchy for each sensitive column
     for column_name in columns_to_anonymize:
         hierarchy_name = f'{column_name}_hier'
         column_type = columns_to_anonymize[column_name]
+
         column_hierarchy_bindings.append((column_name, hierarchy_name))
+
         if(column_type=="date"):
             #Prepare date range hierarchy request
             payload = {
@@ -235,22 +241,34 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
                 'years': (None,'5'),
                 'months': (None,'6'),
                 'days': (None,'7'),
-                'fanout': (None,'3')
+                'fanout': (None,fanout)
             }
         elif(column_type=="string"):
             #Prepare distinct hierarchy request
-            payload = {
-                'hierType': (None,'distinct'),
-                'varType': (None,'string'),
-                'attribute': (None, column_name),
-                'hierName': (None,hierarchy_name),
-                'sorting': (None,'alphabetical'),
-                'fanout': (None,'3')
-            }
+            if(string_anon_method=="distinct"):
+                payload = {
+                    'hierType': (None,'distinct'),
+                    'varType': (None,'string'),
+                    'attribute': (None, column_name),
+                    'hierName': (None,hierarchy_name),
+                    'sorting': (None,'alphabetical'),
+                    'fanout': (None,fanout)
+                }
+            #Prepare masking hierarchy request
+            elif(string_anon_method=="mask"):
+                mask_length = configs.get("MASK_LENGTH").__getattribute__("data")
+                payload = {
+                    'hierType': (None,'mask'),
+                    'varType': (None,'string'),
+                    'attribute': (None, column_name),
+                    'hierName': (None,hierarchy_name),
+                    'length': (None,mask_length)
+                }
         elif(column_type=="double"):
             #Prepare double hierarchy request
-            endLimit = 100
-            step = 5
+            column_max_value = df_dataset.loc[df_dataset[column_name].idxmax()][column_name]
+            endLimit = math.ceil(column_max_value)
+            step = int(endLimit/10)
             payload = {
                 'hierType': (None,'range'),
                 'varType': (None,'double'),
@@ -259,12 +277,13 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
                 'startLimit': (None,'1'),
                 'endLimit': (None,endLimit),
                 'step': (None,step),
-                'fanout': (None,'3')
+                'fanout': (None,fanout)
             }
         elif(column_type=="int"):
             #Prepare double hierarchy request
-            endLimit = 100
-            step = 5
+            column_max_value = df_dataset.loc[df_dataset[column_name].idxmax()][column_name]
+            endLimit =  column_max_value // 10 if column_max_value % 10 == 0 else column_max_value // 10 + 1
+            step = int(endLimit/10)
             payload = {
                 'hierType': (None,'range'),
                 'varType': (None,'int'),
@@ -273,7 +292,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
                 'startLimit': (None,'1'),
                 'endLimit': (None,endLimit),
                 'step': (None,step),
-                'fanout': (None,'3')
+                'fanout': (None,fanout)
             }
 
         #Send request and save hierarchy to file
@@ -289,9 +308,8 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         print(f"Created hierarchy {hierarchy_file}")
 
         ########################################
-        #PHASE 3: LOADING HIERARCHIES TO AMNESIA 
+        #PHASE 3: LOADING HIERARCHIES TO AMNESIA
         ########################################
-
         payload = {
             'hierarchies': open(hierarchy_path, 'rb'),
         }

@@ -2,6 +2,7 @@ import sys, getopt
 import operator
 import pandas as pd
 import os
+import re
 import subprocess
 import requests
 import time
@@ -28,16 +29,20 @@ def main(argv):
     #Analyze file
     sensitive_columns =  analyzeFile()
     #Prepare input file for anonymization
-    preprocessed_dir = preprocessFile(input_file_name)
+    preprocessed_dir = None
+    if(sensitive_columns is not None) :
+        preprocessed_dir = preprocessFile(sensitive_columns)
     #Start Amnesia
-    amnesiaStarted = initiateAmnesia()
+    amnesiaStarted = None
+    if(preprocessed_dir):
+        amnesiaStarted = initiateAmnesia()
     #Anonymize file
     anonymizationDone = None
     if(amnesiaStarted):
         anonymizationDone = anonymizeFile(sensitive_columns, preprocessed_dir)
     #Stop Amnesia
     if(anonymizationDone):
-       stopAmnesia()
+        stopAmnesia()
 
 
 def loadDataset(argv):
@@ -46,7 +51,7 @@ def loadDataset(argv):
     input_dir = None
     opts, args = getopt.getopt(argv,"i:",["ifile="])
     for opt, arg in opts:
-        if opt in ("-i", "--ifile"):
+        if opt in ("-i", "--ifile"): 
             input_dir = arg
     df_dataset = pd.read_csv(input_dir, sep=',')
     input_file_name = input_dir.rsplit('\\', 1)[-1].rsplit('.csv')[0]
@@ -55,20 +60,20 @@ def loadDataset(argv):
 def analyzeFile():
     global df_dataset
 
-    df_dict = df_dataset.to_dict(orient="list")
-    df_sensitive_columns = pd.DataFrame(columns=['columnName', 'columnType', 'mostFrequentEntity', 'percentage'])
-    rows_number = len(df_dataset.index)
-
-    #Find column data types
-    column_datatypes = df_dataset.dtypes.replace("object","string").replace("bool","string").replace("category","string").replace("float64","double").replace("int64","int").replace("datetime64","date")
-    
     print("\n")
     print("####################################")
     print("Analysis process has been initiated.")
     print("####################################")
     print("\nPlease wait...\n")
 
-    #Implement Batch Analysis
+    df_dict = df_dataset.to_dict(orient="list")
+    df_sensitive_columns = pd.DataFrame(columns=['columnName', 'columnType', 'mostFrequentEntity', 'percentage'])
+    rows_number = len(df_dataset.index)
+
+    #1st level of finding columns type
+    column_datatypes = df_dataset.dtypes.replace("object","string").replace("bool","string").replace("category","string").replace("float64","double").replace("int64","int").replace("datetime64","date")
+
+    #Implement Presidio Batch Analysis
     analyzer = AnalyzerEngine()
     batch_analyzer = BatchAnalyzerEngine(analyzer_engine=analyzer)
     analyzer_results = batch_analyzer.analyze_dict(df_dict, language="en")
@@ -77,7 +82,7 @@ def analyzeFile():
     #Find number of entities per column and calculate percentage of most frequent entity
     for column in analyzer_results:
         column_entity_types = {}
-        column_recognized_entities = column.recognizer_results
+        column_recognized_entities = column.recognizer_results        
         for entity in column_recognized_entities:
             if(entity):
                 entity_type = entity[0].entity_type
@@ -85,28 +90,52 @@ def analyzeFile():
                     column_entity_types[entity_type]+=1
                 else:
                     column_entity_types[entity_type]=1
+        #Check if sensitive entities were found
         if(column_entity_types):
             #Find most frequent entity in the current column
             max_key = max(column_entity_types.items(), key=operator.itemgetter(1))[0]
             max_value = max(column_entity_types.values())
             #Assume personal/sensitive column if percentage>0.5
             percentage_of_sensitivity = max_value / rows_number
-            if(percentage_of_sensitivity > 0.5):
+            if(percentage_of_sensitivity >= 0.5):
                 #Handle DATE_TIME column type
                 if(max_key == "DATE_TIME"):
-                    df_sensitive_columns.loc[len(df_sensitive_columns.index)] = [column.key, "date", max_key, percentage_of_sensitivity]
-                    continue
+                    #Handle as dates only acceptable Amnesia date formats
+                    df_dates = pd.DataFrame()
+                    df_dates['non_matching'] = df_dataset[column.key].apply(extract_acceptable_dates).apply(pd.Series)
+                    non_matching_cells = df_dates['non_matching'].sum()
+                    if (non_matching_cells==0):
+                        df_sensitive_columns.loc[len(df_sensitive_columns.index)] = [column.key, "date", max_key, percentage_of_sensitivity]
+                        continue
                 df_sensitive_columns.loc[len(df_sensitive_columns.index)] = [column.key, column_datatypes[column.key], max_key, percentage_of_sensitivity]
 
-    #Print analysis results
+    if(not df_sensitive_columns.empty):
+        #Print analysis results
+        print("Analysis results")
+        print("====================================")
+        print(df_sensitive_columns)
+        return df_sensitive_columns
+    
     print("Analysis results")
     print("====================================")
-    print(df_sensitive_columns)
-    return df_sensitive_columns
+    print("No personal or sensitive fields found in the given dataset.")
+    return None
 
 
-def preprocessFile(input_file_name):
-    global df_dataset, df_preprocessed, root_dir
+def extract_acceptable_dates(text):
+    # Regular expression for ISO 8601 format (YYYY-MM-DD)
+    iso_pattern = r"\d{4}-\d{2}-\d{2}"
+    # Regular expression for RFC 2822 format (e.g. Tue, 01 Mar 2022 00:00:00 GMT)
+    rfc_pattern = r"[A-Za-z]{3},\s\d{2}\s[A-Za-z]{3}\s\d{4}\s\d{2}:\d{2}:\d{2}\s[A-Z]{3}"
+    # Regular expression for Unix timestamp format (e.g. 1646064000)
+    unix_pattern = r"\d{10}"
+
+    non_matches = re.sub(f"{iso_pattern}|{rfc_pattern}|{unix_pattern}", "", text).strip()
+    return (len(non_matches))
+
+
+def preprocessFile(sensitive_columns):
+    global df_dataset, df_preprocessed, root_dir, input_file_name
 
     #Create folder of preprocessed datasets
     preprocessed_dir = f"{root_dir}\\build\\preprocessed_datasets\\"
@@ -194,7 +223,6 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         hierarchy_name = f'{column_name}_hier'
         column_type = columns_to_anonymize[column_name]
         column_hierarchy_bindings.append((column_name, hierarchy_name))
-        payload = None
         if(column_type=="date"):
             #Prepare date range hierarchy request
             payload = {
@@ -269,7 +297,6 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         }
         response = requests.post("http://localhost:8181/loadHierarchies", cookies=cookies, files=payload)
         print(response.text)
-        time.sleep(2)
 
     ########################################################
     #PHASE 4: BINDING HIERARCHIES TO COLUMNS AND ANONYMIZING

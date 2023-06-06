@@ -1,0 +1,85 @@
+distinct
+name fromHarbor_hier
+type string
+height 4
+
+PA* has PAMPHILA_LESBOU-Greece_(806) PANORMITES_SUMES-Greece_(088) PANAGIOUDA_LESBOU-Greece_(807) 
+Pe* has Pessada_Kefallinnias-Greece_(PSK) Peyki_Evvoias-Greece_(PYV) Perama_Geras_Mytilinis-Greece_(PGM) Pelasyia-Greece_(PEL) 
+PI* has PISO_LIVADI_PAROS-Greece_(857) 
+An* has Antikyra-Greece_(ATK) Andirrion-Greece_(ANT) 
+Ga* has Gavdos_Chanea-Greece_(GAD) Galatas_Troizinas-Greece_(GAL) 
+Py* has Pyrgos-Greece_(PYR) 
+Hy* has Hydra_(Idhra)-Greece_(HYD) 
+Ko* has Korinthos-Greece_(KRT) Kos-Greece_(KGS) 
+Ka* has Kalymnos-Greece_(KMI) Kardamaina_Kos-Greece_(KRM) Katerini-Greece_(KEI) Kalamos_Island_(Lefkada)-Greece_(KAI) Katapola-Greece_(KTP) Karystos-Greece_(KST) Kapsalion_(Kythira)-Greece_(KAP) 
+Pa* has Paxi-Greece_(PAX) Pachi-Greece_(PME) Paloukia-Greece_(PAO) Palaia_Epidavros-Greece_(PEP) Palaia_Fokaia-Greece_(PFA) 
+KI* has KITROS_PIERIAS-Greece_(753) 
+Po* has Potamos_Antikithera-Greece_(POA) 
+PS* has PSATHOPURGOS_AKHAIAS-Greece_(848) 
+Ki* has Kiparissia-Greece_(KIP) Kiato-Greece_(KIO) 
+Sa* has Salamis-Greece_(SAL) Samos-Greece_(SMI) 
+Is* has Istanbul-Greece_(TR-IST) 
+Ma* has Mathraki_Diapontioi_Island-Greece_(MTR) 
+Ye* has Yerakini-Greece_(YER) 
+Fa* has Faneromeni_Salaminas-Greece_(FNR) 
+Gl* has Glyfada_Saronikou-Greece_(GFD) 
+Mi* has Mirina-Greece_(MYR) Mirties_Kalimnou-Greece_(MRS) 
+MO* has MOURTOS_THESPROTIAS-Greece_(781) 
+St* has Stavros_Halkidikis-Greece_(SHA) Stylida_(Stylis)-Greece_(SYS) 
+Mo* has Monemvasia-Greece_(MON) Molyvos-Greece_(MOL) Moudhros-Greece_(MDR) 
+TU* has TUROS_ARKADIAS-Greece_(840) 
+Na* has Naoussa_Parou-Greece_(NAS) 
+Vr* has Vrisakia-Greece_(VRI) 
+Ti* has Tilos-Greece_(TIL) 
+PU* has PURGOS_KARUSTIAS_EUBOIAS-Greece_(824) 
+Am* has Amfilochia-Greece_(AMF) 
+RA* has RAKHAI_PHTHIOTIDAS-Greece_(825) 
+MA* has MAKRONISOS-Greece_(856) 
+So* has Sougia_Chanion-Greece_(SOG) 
+Rh* has Rhodes-Greece_(RHO) 
+AG* has AGIOKAMPOS_EUBOIAS_(OREON)-Greece_(AOR) 
+Va* has Vassiliki_Leykadas-Greece_(VSS) 
+DE* has DERBENI_KORINTHIAS-Greece_(730) 
+My* has Mytilene-Greece_(MJT) 
+Pl* has Plakias_Rethimnou-Greece_(ALG) 
+PO* has PORTO_LAPHIA_EUBOIAS-Greece_(821) PORTO_KARRA_KHALKIDIKES-Greece_(854) 
+KO* has KOTRONAS_LAKONIAS-Greece_(757) 
+Sk* has Skafidia-Greece_(SKD) Skopelos-Greece_(SKO) Skiros-Greece_(SKU) Skaloma-Greece_(SKM) 
+Ne* has Nea_Moudhania-Greece_(NMA) 
+He* has Herakleia_Kykladon-Greece_(HRK) 
+Ar* has Argostolion-Greece_(ARM) 
+Se* has Seriphos-Greece_(SER) 
+Ag* has Agia_Roumeli-Greece_(ROU) Agios_Nikolaos_Fokidas-Greece_(AGF) 
+El* has Elafonissos_Lakonias-Greece_(ELN) 
+Ad* has Adamas_Milos-Greece_(ADL) 
+Ed* has Edipsos-Greece_(EDI) 
+Di* has Diafanion-Greece_(DIA) 
+Ak* has Aktio_Vonitsas-Greece_(AKT) 
+KH* has KHOREUTO_BOLOU-Greece_(847) 
+As* has Assos-Greece_(SOS) 
+PL* has PLATAMONAS_PIERIAS-Greece_(816) 
+Vo* has Volos-Greece_(VOL) 
+Tr* has Trypiti_Chalkidikis-Greece_(TRY) 
+Do* has Donousa_Kykladon-Greece_(DON) 
+Er* has Eretria-Greece_(ERE) 
+De* has Delos-Greece_(DOS) 
+
+P** has PA* Pe* PI* Py* Pa* Po* PS* PU* Pl* PO* PL* 
+A** has An* Am* AG* Ar* Ag* Ad* Ak* As* 
+G** has Ga* Gl* 
+H** has Hy* He* 
+K** has Ko* Ka* KI* Ki* KO* KH* 
+S** has Sa* St* So* Sk* Se* 
+I** has Is* 
+M** has Ma* Mi* MO* Mo* MA* My* 
+Y** has Ye* 
+F** has Fa* 
+T** has TU* Ti* Tr* 
+N** has Na* Ne* 
+V** has Vr* Va* Vo* 
+R** has RA* Rh* 
+D** has DE* Di* Do* De* 
+E** has El* Ed* Er* 
+
+*** has P** A** G** H** K** S** I** M** Y** F** T** N** V** R** D** E** NaN 
+

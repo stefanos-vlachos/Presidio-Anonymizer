@@ -1,0 +1,84 @@
+distinct
+name nationality_hier
+type string
+height 4
+
+No* has Norfolk_Island Norway 
+Do* has Dominican_Republic Dominica 
+An* has Antigua_and_Barbuda Angola Anguilla Andorra 
+Ca* has Cameroon 
+Tu* has Turks_and_Caicos_Islands Turkmenistan Tuvalu 
+Ho* has Hong_Kong Holy_See_(Vatican_City_State) 
+Om* has Oman 
+Ba* has Bahamas 
+Ga* has Gabon 
+So* has South_Africa Somalia 
+Au* has Austria Australia 
+Mo* has Mozambique Montserrat Monaco 
+Ru* has Russian_Federation 
+Ma* has Mali Macedonia Malta Malawi Martinique Macao 
+Pa* has Panama 
+Gu* has Guam Guatemala Guinea-Bissau 
+Br* has Brazil 
+Sa* has Saint_Helena 
+Al* has Algeria 
+Ir* has Iraq Ireland 
+Sl* has Slovenia Slovakia_(Slovak_Republic) 
+Ce* has Central_African_Republic 
+Le* has Lesotho Lebanon 
+Co* has Colombia Cocos_(Keeling)_Islands 
+Ar* has Argentina 
+Fa* has Falkland_Islands_(Malvinas) Faroe_Islands 
+Ja* has Japan 
+Uk* has Ukraine 
+Se* has Seychelles Senegal 
+Gh* has Ghana 
+In* has India 
+Li* has Libyan_Arab_Jamahiriya Liberia 
+Va* has Vanuatu 
+Ta* has Taiwan Tajikistan 
+Fi* has Finland 
+Na* has Nauru 
+Pe* has Peru 
+Pi* has Pitcairn_Islands 
+Ki* has Kiribati 
+We* has Western_Sahara 
+Ch* has China 
+Cz* has Czech_Republic 
+Jo* has Jordan 
+Bu* has Bulgaria 
+Cr* has Croatia 
+Un* has United_States_of_America 
+Ni* has Niger 
+Ph* has Philippines 
+Rw* has Rwanda 
+Uz* has Uzbekistan 
+Sw* has Switzerland 
+Sp* has Spain 
+Bo* has Botswana 
+Gr* has Greenland 
+
+N** has No* Na* Ni* 
+D** has Do* 
+A** has An* Au* Al* Ar* 
+C** has Ca* Ce* Co* Ch* Cz* Cr* 
+T** has Tu* Ta* 
+H** has Ho* 
+O** has Om* 
+B** has Ba* Br* Bu* Bo* 
+G** has Ga* Gu* Gh* Gr* 
+S** has So* Sa* Sl* Se* Sw* Sp* 
+M** has Mo* Ma* 
+R** has Ru* Rw* 
+P** has Pa* Pe* Pi* Ph* 
+I** has Ir* In* 
+L** has Le* Li* 
+F** has Fa* Fi* 
+J** has Ja* Jo* 
+U** has Uk* Un* Uz* 
+V** has Va* 
+K** has Ki* 
+W** has We* 
+
+*** has N** D** A** C** T** H** O** B** G** S** M** R** P** I** L** F** J** U** V** K** W** NaN 
+

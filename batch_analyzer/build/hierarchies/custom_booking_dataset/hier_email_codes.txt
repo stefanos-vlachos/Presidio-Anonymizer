@@ -1,0 +1,72 @@
+distinct
+name email_hier
+type string
+height 4
+
+Ri* has Richard.Brooks@gmail.com 
+Jo* has John.Joseph@gmail.com Jonathan.Ballard@gmail.com Joy.Thompson@gmail.com 
+Ta* has Tammy.Collins@gmail.com Tara.Graham@gmail.com Taylor.Giles@gmail.com 
+Mo* has Monica.Richardson@gmail.com 
+An* has Anthony.Martin@gmail.com Andrea.Ray@gmail.com Anna.Smith@gmail.com Angela.Manning@gmail.com Andrew.Peterson@gmail.com Angela.Lee@gmail.com 
+He* has Heather.Williams@gmail.com Heidi.Fowler@gmail.com Heather.Meyer@gmail.com Hector.King@gmail.com 
+Me* has Melvin.Jackson@gmail.com Melissa.West@gmail.com 
+Su* has Susan.Cruz@gmail.com 
+Ke* has Kevin.Robinson@gmail.com Keith.Hill@gmail.com Kendra.Murray@gmail.com Kevin.Campbell@gmail.com Kelly.Santiago@gmail.com 
+Er* has Erika.Riley@gmail.com 
+Ra* has Raymond.Young@gmail.com Raymond.Russell@gmail.com 
+Mi* has Mindy.Hill@gmail.com Michelle.Nixon@gmail.com Michael.Brown@gmail.com Michelle.Howell@gmail.com 
+Ry* has Ryan.Nguyen@gmail.com Ryan.Dixon@gmail.com 
+Be* has Benjamin.Williams@gmail.com 
+Ca* has Cameron.Holmes@gmail.com Carlos.Heath@gmail.com Caleb.Everett@gmail.com 
+St* has Stephanie.Miller@gmail.com 
+Ka* has Katrina.Taylor@gmail.com 
+Wa* has Wayne.Adams@gmail.com 
+Ju* has Judith.Nichols@gmail.com Julie.Knox@gmail.com 
+Sh* has Sherri.Martinez@gmail.com 
+Ch* has Cheryl.Gutierrez@gmail.com Christine.Woodward@gmail.com Christopher.Zuniga@gmail.com Charles.Jordan@gmail.com Christopher.Baldwin@gmail.com Christopher.Rivera@gmail.com 
+Ki* has Kimberly.Fuller@gmail.com Kirk.Bray@gmail.com 
+Sc* has Scott.Allen@gmail.com 
+Se* has Sean.Jones@gmail.com Sean.Wu@gmail.com 
+Da* has Danielle.Lewis@gmail.com David.Chavez@gmail.com Dana.Walker@gmail.com Daniel.Foster@gmail.com Dale.Garcia@gmail.com David.Day@gmail.com 
+Th* has Theresa.Dean@gmail.com 
+Je* has Jeremy.Palmer@gmail.com Jeremy.Brown@gmail.com Jeremy.Rollins@gmail.com Jeffrey.Smith@gmail.com Jennifer.Matthews@gmail.com 
+Ty* has Tyler.Lozano@gmail.com 
+Sa* has Samantha.Parker@gmail.com 
+Ti* has Tina.Parker@gmail.com Tim.Chase@gmail.com Tiffany.Harris@gmail.com 
+Fa* has Faith.Jones@gmail.com 
+Br* has Brittany.Marshall@gmail.com Brittany.Roberts@gmail.com Brenda.Mahoney@gmail.com 
+Ro* has Robert.Green@gmail.com Robert.Martin@gmail.com 
+Al* has Alison.Wallace@gmail.com Alan.Marsh@gmail.com 
+Li* has Lisa.Liu@gmail.com Lisa.Wilson@gmail.com Lisa.Erickson@gmail.com 
+Le* has Leah.Simpson@gmail.com 
+Ma* has Matthew.Allen@gmail.com Marilyn.Barnes@gmail.com 
+Ed* has Edward.Young@gmail.com 
+Tr* has Travis.Page@gmail.com 
+La* has Latoya.Austin@gmail.com 
+Au* has Audrey.Jackson@gmail.com 
+Do* has Dominic.Walker@gmail.com 
+Ja* has Jaime.Jones@gmail.com Jamie.Simmons@gmail.com 
+Wi* has William.Shah@gmail.com William.Ruiz@gmail.com 
+Re* has Renee.Cruz@gmail.com 
+Co* has Corey.Craig@gmail.com 
+Ad* has Adrian.Moody@gmail.com 
+De* has Derrick.Smith@gmail.com 
+
+R** has Ri* Ra* Ry* Ro* Re* 
+J** has Jo* Ju* Je* Ja* 
+T** has Ta* Th* Ty* Ti* Tr* 
+M** has Mo* Me* Mi* Ma* 
+A** has An* Al* Au* Ad* 
+H** has He* 
+S** has Su* St* Sh* Sc* Se* Sa* 
+K** has Ke* Ka* Ki* 
+E** has Er* Ed* 
+B** has Be* Br* 
+C** has Ca* Ch* Co* 
+W** has Wa* Wi* 
+D** has Da* Do* De* 
+F** has Fa* 
+L** has Li* Le* La* 
+
+*** has R** J** T** M** A** H** S** K** E** B** C** W** D** F** L** NaN 
+

@@ -35,7 +35,7 @@ def main(argv):
     #Start Amnesia
     amnesiaStarted = None
     if(preprocessed_dir):
-        amnesiaStarted = initiateAmnesia()
+        amnesiaStarted = startAmnesia()
     #Anonymize file
     anonymizationDone = None
     if(amnesiaStarted):
@@ -54,6 +54,7 @@ def loadDataset(argv):
         if opt in ("-i", "--ifile"): 
             input_dir = arg
     df_dataset = pd.read_csv(input_dir, sep=',')
+    df_dataset['index'] = df_dataset.index
     input_file_name = input_dir.rsplit('\\', 1)[-1].rsplit('.csv')[0]
 
 
@@ -67,7 +68,7 @@ def analyzeFile():
     print("\nPlease wait...\n")
 
     df_dict = df_dataset.to_dict(orient="list")
-    df_sensitive_columns = pd.DataFrame(columns=['columnName', 'columnType', 'mostFrequentEntity', 'percentage'])
+    df_sensitive_columns = pd.DataFrame(columns=['columnName', 'columnType', 'mostFrequentEntityType', 'percentage'])
     rows_number = len(df_dataset.index)
 
     #1st level of finding columns type
@@ -108,7 +109,7 @@ def analyzeFile():
                         df_sensitive_columns.loc[len(df_sensitive_columns.index)] = [column.key, "date", max_key, percentage_of_sensitivity]
                         continue
                 df_sensitive_columns.loc[len(df_sensitive_columns.index)] = [column.key, column_datatypes[column.key], max_key, percentage_of_sensitivity]
-
+        
     if(not df_sensitive_columns.empty):
         #Print analysis results
         print("Analysis results")
@@ -146,11 +147,13 @@ def preprocessFile(sensitive_columns):
 
     #Replace spaces
     df_preprocessed = df_dataset.replace(', ', '-', regex=True).replace(' ', '_', regex=True)
+    df_preprocessed['index'] = df_dataset.index
     df_preprocessed.to_csv(full_path, sep=',', index=False, encoding='utf-8')
+
     return full_path
 
 
-def initiateAmnesia():
+def startAmnesia():
     global configs
 
     #Run Amnesia 
@@ -164,7 +167,7 @@ def initiateAmnesia():
 def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     global configs, root_dir, input_file_name, df_dataset
 
-    df_anonymized = df_dataset.copy()
+    df_anonymized = df_preprocessed.copy()
 
     print("\n")
     print("########################################")
@@ -174,8 +177,13 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
 
     #Prepare columns to anonymize
     columns_to_anonymize = dict()
+
     for index, row in df_sensitive_columns.iterrows():
         columns_to_anonymize[row['columnName']] = row['columnType']
+
+    #Add index in order to facilitate merging of anonymized columns
+    columns_to_anonymize['index'] = 'string'
+
     str_columns_to_anonymize = str(columns_to_anonymize).replace("\'", "\"").replace(" ", "")    
 
     #Get session ID and prepare requests metadata
@@ -200,6 +208,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
     response = requests.post('http://localhost:8181/loadData', cookies=cookies, files=payload, allow_redirects=True)
     print(response.text)
     if ("Success" not in response.text):
+        stopAmnesia()
         return 0
     
     ########################################
@@ -224,6 +233,9 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
 
     #Create hierarchy for each sensitive column
     for column_name in columns_to_anonymize:
+        if(column_name=='index'):
+            continue;
+        
         hierarchy_name = f'{column_name}_hier'
         column_type = columns_to_anonymize[column_name]
 
@@ -274,10 +286,10 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
                 'varType': (None,'double'),
                 'attribute': (None,column_name),
                 'hierName': (None, hierarchy_name),
-                'startLimit': (None,'1'),
+                'startLimit': (None,0),
                 'endLimit': (None,endLimit),
                 'step': (None,step),
-                'fanout': (None,fanout)
+                'fanout': (None,10)
             }
         elif(column_type=="int"):
             #Prepare double hierarchy request
@@ -299,6 +311,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         response = requests.post('http://localhost:8181/generateHierarchy', cookies=cookies, files=payload, allow_redirects=True)
         if("Fail" in response.text):
             print(f"Failed to create hierarchy for {column_name}.")
+            stopAmnesia()
             return 0
         hierarchy_file = f"hier_{column_name}_codes.txt"
         hierarchy_path = f"{current_dataset_hierarchies_path}\\{hierarchy_file}"
@@ -350,6 +363,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
         binding_results[column] = json.loads(response.text)
 
         if ("Solutions" not in response.text):
+            stopAmnesia()
             return 0
         
         print(f"Binded succesfully {hierarchy} hierarchy to column {column}.")
@@ -364,6 +378,7 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
                 safe_solutions_levels[solution] = levels
 
         selected_solution = min(safe_solutions_levels, key=safe_solutions_levels.get)
+        
         selected_levels = safe_solutions_levels[selected_solution]
 
         payload = {
@@ -378,8 +393,12 @@ def anonymizeFile(df_sensitive_columns, preprocessed_dir):
             f.write(response.content)
 
         #Keep anonymized column
-        df_anonymized_column = pd.read_csv(anonymized_column_path)
-        df_anonymized[column] = df_anonymized_column[column]
+        df_anonymized_column = pd.read_csv(anonymized_column_path, header=0)
+        
+        #Replace sensitive columns with anonymized columns
+        df_anonymized = df_anonymized.merge(df_anonymized_column[['index', column]], on='index', how='left')
+        df_anonymized[column] = df_anonymized[f'{column}_y'].fillna(df_anonymized[f'{column}_x'])
+        df_anonymized.drop([f'{column}_x', f'{column}_y'], axis=1, inplace=True)
 
     #Store bindings
     with open(binding_file_path, 'w+') as f:

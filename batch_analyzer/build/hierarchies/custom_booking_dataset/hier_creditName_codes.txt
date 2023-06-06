@@ -1,0 +1,72 @@
+distinct
+name creditName_hier
+type string
+height 4
+
+Mi* has Michelle Michael Mindy 
+Je* has Jennifer Jeffrey Jeremy 
+Jo* has John Joy Jonathan 
+Sa* has Samantha 
+An* has Angela Andrew Anna Andrea Anthony 
+Ma* has Marilyn Matthew 
+Ty* has Tyler 
+Ca* has Cameron Caleb Carlos 
+Li* has Lisa 
+Me* has Melissa Melvin 
+Sh* has Sherri 
+Er* has Erika 
+Ki* has Kirk Kimberly 
+Ro* has Robert 
+St* has Stephanie 
+Au* has Audrey 
+Ch* has Charles Cheryl Christine Christopher 
+He* has Heather Hector Heidi 
+Le* has Leah 
+Ta* has Taylor Tara Tammy 
+Al* has Alan Alison 
+Da* has Daniel Dana David Danielle Dale 
+Be* has Benjamin 
+Wi* has William 
+De* has Derrick 
+Mo* has Monica 
+Ti* has Tina Tiffany Tim 
+Wa* has Wayne 
+Ke* has Kevin Keith Kendra Kelly 
+Se* has Sean 
+Ju* has Judith Julie 
+Ra* has Raymond 
+Br* has Brenda Brittany 
+Ad* has Adrian 
+Ja* has Jaime Jamie 
+Ed* has Edward 
+Su* has Susan 
+Ri* has Richard 
+Th* has Theresa 
+Do* has Dominic 
+La* has Latoya 
+Re* has Renee 
+Fa* has Faith 
+Ry* has Ryan 
+Tr* has Travis 
+Ka* has Katrina 
+Co* has Corey 
+Sc* has Scott 
+
+M** has Mi* Ma* Me* Mo* 
+J** has Je* Jo* Ju* Ja* 
+S** has Sa* Sh* St* Se* Su* Sc* 
+A** has An* Au* Al* Ad* 
+T** has Ty* Ta* Ti* Th* Tr* 
+C** has Ca* Ch* Co* 
+L** has Li* Le* La* 
+E** has Er* Ed* 
+K** has Ki* Ke* Ka* 
+R** has Ro* Ra* Ri* Re* Ry* 
+H** has He* 
+D** has Da* De* Do* 
+B** has Be* Br* 
+W** has Wi* Wa* 
+F** has Fa* 
+
+*** has M** J** S** A** T** C** L** E** K** R** H** D** B** W** F** NaN 
+

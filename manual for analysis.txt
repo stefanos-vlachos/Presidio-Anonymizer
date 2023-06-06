@@ -1,6 +1,0 @@
-STEPS:
-
-1) cd batch_analyzer
-
-### Execute script providing the path of the file that will be analysed
-2) python batch_analyzer.py -i "D:\......\Presidio-Anonymizer\resources\generator_output\custom_enirisst_dataset.csv"

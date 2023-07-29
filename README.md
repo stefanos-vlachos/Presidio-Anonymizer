@@ -12,7 +12,7 @@ The usefulness of the RoG anonymization pipeline lies in the following features:
 * **Effective on a wide range of domains**: RoG incorporates versatile PII entity recognition methods 
 
 
-## A deeper look into the tool
+## A deeper look into RoG
 ### Pipeline Architecture
 ### PII Entity Recognitiom
 ### Sensitive Data Anonymization

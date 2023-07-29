@@ -13,9 +13,9 @@ The usefulness of the RoG anonymization pipeline lies in the following features:
 
 
 ## A deeper look into the tool
-### Pipeline architecture and workflow
-### PII entity recognitiom
-### Sensitive data anonymization
+### Pipeline architecture and Workflow
+### PII Entity Recognitiom
+### Sensitive Data Anonymization
 
 ## User Manual
 ## Future Work

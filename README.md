@@ -39,11 +39,19 @@ Sensitive data identification involves identifying and categorising data based o
 
 aiming to identify predefined and custom PII.
 
+<p align="center">
+  <img src="./readme-images/presidio-workflow.png"/>
+</p>
+
 ### Sensitive Data Anonymization
 Data anonymization refers to the process by which personal data is altered in such a way that a data subject can no longer be identified directly or indirectly, either by the data controller alone or in collaboration with any other party. Data anonymisation may include methods such as ***masking***, ***generalization***, and ***perturbation***, which help to remove or obfuscate personally identifiable information. To this end, the ***Amnesia REST API*** was utilized.
 
 ***Amnesia*** is a tool developed by the OpenAIRE infrastructure, which enables the full or partial, if instructed, transformation of personal information to anonymous data. The provided REST API enables the programmatic implementation of data anonymisation tasks via HTTP requests to and from the locally running
 Amnesia server. The basic idea is to replace unique values or unique combinations of values with more abstract ones, so that the resulting data will no longer be personally identifiable.
+
+<p align="center">
+  <img src="./readme-images/amnesia.png"/>
+</p>
 
 ### End-to-End Workflow
 

@@ -1,7 +1,18 @@
 # RoG§: A Pipeline for Automated Sensitive Data Identification and Anonymisation
+> § The Ring of Gyges was a magic ring mentioned by the philosopher Plato; it gives its owner the power to become invisible at will.
 
-### Motivation
-### About the tool
-### User Manual
-### Future Work
-### Contribution
+Nowadays, the amount of data available online is constantly increasing. This data may contain sensitive or private information that can expose the person behind the data or be misused by malicious actors for identity theft, stalking, and other nefarious purposes. Thus, there is a growing need to protect individuals’ privacy and prevent data breaches in several application domains. This is where **RoG** comes in.
+
+## Contribution
+Protecting data privacy is a complex and multifaceted process which involves a range of legal, ethical, and technical considerations. After assessing the challenges associated with data protection, the role of automated tools, and the effectiveness of identifying and anonymising sensitive data, we came up with **RoG**, a **fully-automated** process for **sensitive data identification** and **anonymisation**.
+
+The usefulness of the RoG anonymization pipeline lies in the following features:
+* **Fully-automated anonymization**: no or minimum customization needed
+* **No data science knowledge required**:
+* **Effective on a wide range of domains**:
+
+
+## About the tool
+## User Manual
+## Future Work
+## Contribution

@@ -4,7 +4,7 @@
 Nowadays, the amount of data available online is constantly increasing. This data may contain sensitive or private information that can expose the person behind the data or be misused by malicious actors for identity theft, stalking, and other nefarious purposes. Thus, there is a growing need to protect individuals’ privacy and prevent data breaches in several application domains. This is where **RoG** comes in.
 
 ## What is RoG?
-Protecting data privacy is a complex and multifaceted process which involves a range of legal, ethical, and technical considerations. After assessing the challenges associated with data protection, the role of automated tools, and the effectiveness of identifying and anonymising sensitive data, we came up with **RoG**, a **fully-automated** process for **sensitive data identification** and **anonymisation**.
+Protecting data privacy is a complex and multifaceted process which involves a range of legal, ethical, and technical considerations. After assessing the challenges associated with data protection, the role of automated tools, and the effectiveness of identifying and anonymising sensitive data, we came up with **RoG**, a **fully-automated** pipeline for **sensitive data identification** and **anonymisation**.
 
 The usefulness of the RoG anonymization pipeline lies in the following features:
 * **Fully-automated anonymization**: RoG requires no or minimum customization

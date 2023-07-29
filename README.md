@@ -1,7 +1,9 @@
 # RoG§: A Pipeline for Automated Sensitive Data Identification and Anonymisation
 > § The Ring of Gyges was a magic ring mentioned by the philosopher Plato; it gives its owner the power to become invisible at will.
 
-![alt text]([http://url/to/img.png](https://mysteriouswritings.com/wp-content/uploads/2017/03/Platon_Cave_Sanraedam_1604.jpg))
+<p align="center">
+  <img src="Platon_Cave_Sanraedam.jpg" />
+</p>
 
 Nowadays, the amount of data available online is constantly increasing. This data may contain sensitive or private information that can expose the person behind the data or be misused by malicious actors for identity theft, stalking, and other nefarious purposes. Thus, there is a growing need to protect individuals’ privacy and prevent data breaches in several application domains. This is where **RoG** comes in.
 

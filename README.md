@@ -14,7 +14,7 @@ The usefulness of the RoG anonymization pipeline lies in the following features:
 
 ## A deeper look into RoG
 Based on the existing literature and taking into consideration the breadth of the entity recognition and data anonymisation research fields, our interest was steered towards developing a NLP-based pipeline, which would automatically identify personal/sensitive information in a given dataset and facilitate its
-anonymisation. To this end,  (i) the **Presidio Analyzer**, along with (ii) the **Amnesia tool** were identified as two suitable candidates to be used in the proposed approach. 
+anonymisation. To this end, (i) the **Presidio Analyzer**, along with (ii) the **Amnesia API** were identified as two suitable candidates to be used in the proposed approach. 
 
 ### Pipeline Architecture
 ### Sensitive Data Identification

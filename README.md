@@ -54,6 +54,7 @@ Amnesia server. The basic idea is to replace unique values or unique combination
 </p>
 
 ### End-to-End Workflow
+Taking a deeper look into the functionality of the proposed pipeline, the workflow is divided into the following three successive phases:
 
 ## User Manual
 ### How to install RoG?

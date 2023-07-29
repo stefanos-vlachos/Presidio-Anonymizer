@@ -8,11 +8,11 @@ Protecting data privacy is a complex and multifaceted process which involves a r
 
 The usefulness of the RoG anonymization pipeline lies in the following features:
 * **Fully-automated anonymization**: no or minimum customization needed
-* **No data science knowledge required**:
-* **Effective on a wide range of domains**:
+* **No data science knowledge required**: RoG provides a layer of abstraction over more intricate analysis and anonymization processes
+* **Effective on a wide range of domains**: RoG incorporates numerous PII entity recognition methods 
 
 
-## About the tool
+## A deeper look into the tool
 ## User Manual
 ## Future Work
 ## Contribution

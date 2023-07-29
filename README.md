@@ -7,9 +7,9 @@ Nowadays, the amount of data available online is constantly increasing. This dat
 Protecting data privacy is a complex and multifaceted process which involves a range of legal, ethical, and technical considerations. After assessing the challenges associated with data protection, the role of automated tools, and the effectiveness of identifying and anonymising sensitive data, we came up with **RoG**, a **fully-automated** process for **sensitive data identification** and **anonymisation**.
 
 The usefulness of the RoG anonymization pipeline lies in the following features:
-* **Fully-automated anonymization**: no or minimum customization needed
+* **Fully-automated anonymization**: RoG requires no or minimum customization
 * **No data science knowledge required**: RoG provides a layer of abstraction over more intricate analysis and anonymization processes
-* **Effective on a wide range of domains**: RoG incorporates numerous PII entity recognition methods 
+* **Effective on a wide range of domains**: RoG incorporates versatile PII entity recognition methods 
 
 
 ## A deeper look into the tool

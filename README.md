@@ -25,12 +25,24 @@ The *usefulness* of the RoG anonymization pipeline lies in the following feature
 Based on the existing literature and taking into consideration the breadth of the entity recognition and data anonymisation research fields, our interest was steered towards developing a NLP-based pipeline, which would automatically identify personal/sensitive information in a given dataset and facilitate its
 anonymisation. To this end, (i) the ***Presidio Analyzer***, along with (ii) the ***Amnesia API*** were identified as two suitable candidates to be used in the proposed approach. 
 
-### Pipeline Architecture
 ### Sensitive Data Identification
-Sensitive data identification involves identifying and categorising data based on its potential privacy implications.
+Sensitive data identification involves identifying and categorising data based on its potential privacy implications. As mentioned above, ***Presidio Analyzer*** served the role of sensitive data identification.
+
+***Presidio analyser*** is a popular open-source tool and part of the Microsoft Presidio software, which can be used to identify and classify sensitive data, such as ***Personally Identifiable Information (PII)***, ***Protected Health Information (PHI)***, and financial information. This tool harnesses a range of techniques, including: 
+
+* ***Named Entity Recognition (NER)***,
+* ***Regular Expressions***,
+* ***Rulebased Logic***,
+* ***Blacklisting***,
+* ***RFC-822 validation*** and
+* ***checksum***,
+
+aiming to identify predefined and custom PII.
 
 ### Sensitive Data Anonymization
-Data anonymization refers to the process by which personal data is altered in such a way that a data subject can no longer be identified directly or indirectly, either by the data controller alone or in collaboration with any other party. Data anonymisation may include methods such as ***masking***, ***generalization***, and ***perturbation***, which help to remove or obfuscate personally identifiable information.
+Data anonymization refers to the process by which personal data is altered in such a way that a data subject can no longer be identified directly or indirectly, either by the data controller alone or in collaboration with any other party. Data anonymisation may include methods such as ***masking***, ***generalization***, and ***perturbation***, which help to remove or obfuscate personally identifiable information. To this end, ***Amnesia*** was utilized.
+
+***Amnesia*** is a tool developed by the OpenAIRE infrastructure, which enables the full or partial, if instructed, transformation of personal information to anonymous data.
 
 ### End-to-End Workflow
 

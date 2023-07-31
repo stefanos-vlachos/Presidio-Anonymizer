@@ -175,11 +175,10 @@ _________________
 ### Prerequisites
 ### How to use RoG?
 
-## Future Work
-This work can be considered as a first step towards building a fully-featured anonymisation application, with which users will interact via a friendly interface and will be able to fully automatically and efficiently anonymise any given dataset.
-
-## Contribution
+## Contribution & Future Work
 The RoG pipeline is part of our work [RoG: A Pipeline for Automated Sensitive Data Identification and Anonymisation](https://users.uop.gr/~trifon/papers/pdf/ds4cs23-NVZVTR.pdf). This work was supported in part by project [ENIRISST+](https://enirisst-plus.gr/) under grant agreement No. MIS 5047041 from the General Secretary for ERDF & CF, under Operational Programme Competitiveness, Entrepreneurship and Innovation 2014-2020 (EPAnEK) of the Greek Ministry of Economy and Development (co-financed by Greece and the EU through the European Regional Development Fund).
+
+This work can be considered as a first step towards building a fully-featured anonymisation application, with which users will interact via a friendly interface and will be able to fully automatically and efficiently anonymise any given dataset.
 
 ## Find us:
 * **Sotirios Nikoletos:** [E-mail](sothrhsn@hotmail.com)

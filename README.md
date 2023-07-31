@@ -22,6 +22,8 @@ The *usefulness* of the RoG anonymization pipeline lies in the following feature
 * ***No data science knowledge required***: RoG provides a layer of abstraction over more intricate analysis and anonymization processes
 * ***Effective on a wide range of domains***: RoG incorporates versatile PII entity recognition methods 
 
+_________________
+
 
 ## A deeper look into RoG
 Based on the existing literature and taking into consideration the breadth of the entity recognition and data anonymisation research fields, our interest was steered towards developing a NLP-based pipeline, which would automatically identify personal/sensitive information in a given dataset and facilitate its
@@ -109,7 +111,64 @@ The analysis results of each dataset attribute are stored in a Pandas DataFrame,
 </div>
 
 #### 2. Preparation for anonymization
+The automated mechanism deals with the inability of Amnesia to load datasets that contain whitespaces. Here, the given dataset is automatically cleaned off of spaces and is routed towards the anonymisation stage.
+
 #### 3. Anonymization
+During this stage the preprocessed version of the given dataset is passed to the Amnesia REST API, along with the metadata of the identified sensitive columns. The foundation of data anonymisation in Amnesia is **generalisation hierarchies**.
+
+> Generalization hierarchies are a set of rules that define how specific values should be substituted by more general ones in the anonymisation process.
+
+The generalisation hierarchy which defines how these replacements take place is provided by the user as input to the algorithm.
+
+<div align="center">
+
+| attributeType | Hierarchy classes |
+| :----: | :----: |
+| string | Distinct, Masking |
+| date | Distinct, Range |
+| int | Distinct, Range |
+| double | Distinct, Range |
+
+</div>
+
+Additionally, users are given the capability of configuring a handful of parameters that are of high significance for the proper function of Amnesia via the ***pipeline-config.properties*** file:
+
+* **K:** The k-anonymity factor that refers to the number of times each combination of values appears in a data set
+* **FANOUT:** It refers to the number of children for each hierarchy tree
+* **STRING_ANON_METHOD:** It refers to the way Amnesia handles and anonymises strings
+  
+    > The available options are distinct (for replacement of text values by random variables) and mask (for masking text values)
+
+* **MASK_LENGTH:** Used in cases when the masking method is utilised for anomynisation and refers to the number of the mask characters
+
+Considering the previous, the anonymization process of RoG can be unfolded into the following steps:
+
+1. For each dataset attribute, an anonymization hierarchy is created
+
+2. Each hierarchy is loaded to Amnesia REST API
+
+3. Each hierarchy is binded with the coresponding attribute
+
+4. Each attribute/column is anonymized
+
+    > Amnesia REST API produces a plethora of anonymisation solutions that guarantee k-anonymity. However, RoG uses the least strict anonymisation solution so that the interpretability of the dataset is preserved as much as possible
+    
+5. Anonymized attributes/columns are merged into the raw dataset
+
+The following table provides examples of data for which k-anonymity has been ensured:
+
+<div align="center">
+
+| Age | Zip Code | Nationality |
+| :----: | :----: | :----: |
+| <30 |  130** | * |
+| >=40 | 1485* | * |
+| 3* | 130** | * |
+
+</div>
+
+_________________
+
 
 ## User Manual
 ### How to install RoG?

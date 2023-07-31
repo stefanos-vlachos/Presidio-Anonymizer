@@ -18,7 +18,7 @@ sensitive data is not trivial, as there are two significant challenges:
 It is though, difficult to manually identify and protect all types of sensitive data. Therefore, after assessing the challenges associated with data protection, the role of automated tools, and the effectiveness of identifying and anonymising sensitive data, we came up with **RoG**, a **fully-automated** pipeline for ***sensitive data identification*** and ***anonymisation***.
 
 The *usefulness* of the RoG anonymization pipeline lies in the following features:
-* ***Fully-automated anonymization***: RoG requires no or minimum customization
+* ***Fully-automated anonymization***: RoG requires none or minimum customization
 * ***No data science knowledge required***: RoG provides a layer of abstraction over more intricate analysis and anonymization processes
 * ***Effective on a wide range of domains***: RoG incorporates versatile PII entity recognition methods 
 
@@ -182,4 +182,7 @@ This work can be considered as a first step towards building a fully-featured an
 The RoG pipeline is part of our work [RoG: A Pipeline for Automated Sensitive Data Identification and Anonymisation](https://users.uop.gr/~trifon/papers/pdf/ds4cs23-NVZVTR.pdf). This work was supported in part by project [ENIRISST+](https://enirisst-plus.gr/) under grant agreement No. MIS 5047041 from the General Secretary for ERDF & CF, under Operational Programme Competitiveness, Entrepreneurship and Innovation 2014-2020 (EPAnEK) of the Greek Ministry of Economy and Development (co-financed by Greece and the EU through the European Regional Development Fund).
 
 ## Find us:
+* **Sotirios Nikoletos:** [E-mail](sothrhsn@hotmail.com)
+
+
 

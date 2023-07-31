@@ -7,6 +7,8 @@
 
 Nowadays, the amount of data available online is constantly increasing. This data may contain sensitive or private information that can expose the person behind the data or be misused by malicious actors for identity theft, stalking, and other nefarious purposes. Thus, there is a growing need to protect individuals’ privacy and prevent data breaches in several application domains. This is where **RoG** comes in.
 
+_________________
+
 ## What is RoG?
 Protecting data privacy is a complex and multifaceted process which involves a range of legal, ethical, and technical considerations. Protecting
 sensitive data is not trivial, as there are two significant challenges: 
@@ -26,6 +28,9 @@ Based on the existing literature and taking into consideration the breadth of th
 anonymisation. To this end, (i) the ***Presidio Analyzer***, along with (ii) the ***Amnesia API*** were identified as two suitable candidates to be used in the proposed approach. 
 
 ### Sensitive Data Identification
+
+_________________
+
 Sensitive data identification involves identifying and categorising data based on its potential privacy implications. As mentioned above, ***Presidio Analyzer*** served the role of sensitive data identification.
 
 ***Presidio analyser*** is a popular open-source tool and part of the Microsoft Presidio software, which can be used to identify and classify sensitive data, such as ***Personally Identifiable Information (PII)***, ***Protected Health Information (PHI)***, and financial information. This tool harnesses a range of techniques, including: 
@@ -44,6 +49,9 @@ aiming to identify predefined and custom PII.
 </p>
 
 ### Sensitive Data Anonymization
+
+_________________
+
 Data anonymization refers to the process by which personal data is altered in such a way that a data subject can no longer be identified directly or indirectly, either by the data controller alone or in collaboration with any other party. Data anonymisation may include methods such as ***masking***, ***generalization***, and ***perturbation***, which help to remove or obfuscate personally identifiable information. To this end, the ***Amnesia REST API*** was utilized.
 
 ***Amnesia*** is a tool developed by the OpenAIRE infrastructure, which enables the full or partial, if instructed, transformation of personal information to anonymous data. The provided REST API enables the programmatic implementation of data anonymisation tasks via HTTP requests to and from the locally running
@@ -54,16 +62,51 @@ Amnesia server. The basic idea is to replace unique values or unique combination
 </p>
 
 ### End-to-End Workflow
+
+_________________
+
 Taking a deeper look into the functionality of the proposed pipeline, the workflow is divided into the following three successive phases:
 
 #### 1. Analysis
 This stage includes the analysis of the selected data file to automatically detect sensitive or personal data. The process is implemented iteratively for each property of the given dataset and can be unfolded into the following steps:
-1. For each dataset attribute, the ***Presidio BatchAnalyserEngine*** module loads the column as a text phrase
-2. The BatchAnalyserEngine analyses each column and replaces PIIs with more general values
-  > Presidio analyser supports a wide range of recognisable PII entities, such as PERSON, DATE TIME, EMAIL ADDRESS or CREDIT CARD
-3. The most frequent PII entity is calculated for each column
-4. If the most frequent PII is present in more than 50% of the column cells, column is considered personal/sensitive
-  > Higher threshold values would lead to less attributes being labeled as sensitive
+
+i. For each dataset attribute, the ***Presidio BatchAnalyserEngine*** module loads the column as a text phrase
+
+ii. The BatchAnalyserEngine analyses each column and replaces PIIs with more general values
+
+    > Presidio analyser supports a wide range of recognisable PII entities, such as PERSON, DATE TIME, EMAIL ADDRESS or CREDIT CARD
+
+iii. The most frequent PII entity is calculated for each column
+
+iv. If the most frequent PII is present in more than 50% of the column cells, column is considered personal/sensitive
+   
+    > Higher threshold values would lead to less attributes being labeled as sensitive
+
+The analysis results of each dataset attribute are stored in a Pandas DataFrame, which forms the touchstone of the anonymisation stage. An example instance of the DataFrame is shown in the following table. 
+
+<div align="center">
+
+| attributeName | attributeType | mostFrequentEntityType | percentage |
+| :----: | :----: | :----: | :----: |
+| attr1 | string | PERSON | 0.86 |
+| attr2 | string | EMAIL_ADDRESS | 1.00 |
+| ... | ... | ... | ... |
+| attrN | date | DATE TIME | 1.00 |
+
+</div>
+
+***Note:*** The **attributeType** field serves the process of mapping the different identifiable PII entities and Python data types to the recognised data types by Amnesia.
+
+<div align="center">
+
+| df.dtype | attributeType |
+| :----: | :----: |
+| object OR category OR bool | string |
+| int64 | int |
+| float64 | double |
+| datetime64 | date |
+
+</div>
 
 #### 2. Preparation for anonymization
 #### 3. Anonymization

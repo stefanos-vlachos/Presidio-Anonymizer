@@ -56,6 +56,18 @@ Amnesia server. The basic idea is to replace unique values or unique combination
 ### End-to-End Workflow
 Taking a deeper look into the functionality of the proposed pipeline, the workflow is divided into the following three successive phases:
 
+#### 1. Analysis
+This stage includes the analysis of the selected data file to automatically detect sensitive or personal data. The process is implemented iteratively for each property of the given dataset and can be unfolded into the following steps:
+1. For each dataset attribute, the ***Presidio BatchAnalyserEngine*** module loads the column as a text phrase
+2. The BatchAnalyserEngine analyses each column and replaces PIIs with more general values
+  > Presidio analyser supports a wide range of recognisable PII entities, such as PERSON, DATE TIME, EMAIL ADDRESS or CREDIT CARD
+3. The most frequent PII entity is calculated for each column
+4. If the most frequent PII is present in more than 50% of the column cells, column is considered personal/sensitive
+  > Higher threshold values would lead to less attributes being labeled as sensitive
+
+#### 2. Preparation for anonymization
+#### 3. Anonymization
+
 ## User Manual
 ### How to install RoG?
 ### How to use RoG?

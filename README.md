@@ -72,15 +72,15 @@ Taking a deeper look into the functionality of the proposed pipeline, the workfl
 #### 1. Analysis
 This stage includes the analysis of the selected data file to automatically detect sensitive or personal data. The process is implemented iteratively for each property of the given dataset and can be unfolded into the following steps:
 
-i. For each dataset attribute, the ***Presidio BatchAnalyserEngine*** module loads the column as a text phrase
+1. For each dataset attribute, the ***Presidio BatchAnalyserEngine*** module loads the column as a text phrase
 
-ii. The BatchAnalyserEngine analyses each column and replaces PIIs with more general values
+2. The BatchAnalyserEngine analyses each column and replaces PIIs with more general values
 
     > Presidio analyser supports a wide range of recognisable PII entities, such as PERSON, DATE TIME, EMAIL ADDRESS or CREDIT CARD
 
-iii. The most frequent PII entity is calculated for each column
+3. The most frequent PII entity is calculated for each column
 
-iv. If the most frequent PII is present in more than 50% of the column cells, column is considered personal/sensitive
+4. If the most frequent PII is present in more than 50% of the column cells, column is considered personal/sensitive
    
     > Higher threshold values would lead to less attributes being labeled as sensitive
 
@@ -171,10 +171,15 @@ _________________
 
 
 ## User Manual
-### How to install RoG?
+
+### Prerequisites
 ### How to use RoG?
 
 ## Future Work
 This work can be considered as a first step towards building a fully-featured anonymisation application, with which users will interact via a friendly interface and will be able to fully automatically and efficiently anonymise any given dataset.
 
 ## Contribution
+The RoG pipeline is part of our work [RoG: A Pipeline for Automated Sensitive Data Identification and Anonymisation](https://users.uop.gr/~trifon/papers/pdf/ds4cs23-NVZVTR.pdf). This work was supported in part by project ENIRISST+ under grant agreement No. MIS 5047041 from the General Secretary for ERDF & CF, under Operational Programme Competitiveness, Entrepreneurship and Innovation 2014-2020 (EPAnEK) of the Greek Ministry of Economy and Development (co-financed by Greece and the EU through the European Regional Development Fund).
+
+## Find us:
+

@@ -69,7 +69,7 @@ _________________
 
 Taking a deeper look into the functionality of the proposed pipeline, the workflow is divided into the following three successive phases:
 
-#### 1. Analysis
+### 1. Analysis
 This stage includes the analysis of the selected data file to automatically detect sensitive or personal data. The process is implemented iteratively for each property of the given dataset and can be unfolded into the following steps:
 
 1. For each dataset attribute, the ***Presidio BatchAnalyserEngine*** module loads the column as a text phrase
@@ -110,10 +110,10 @@ The analysis results of each dataset attribute are stored in a Pandas DataFrame,
 
 </div>
 
-#### 2. Preparation for anonymization
+### 2. Preparation for anonymization
 The automated mechanism deals with the inability of Amnesia to load datasets that contain whitespaces. Here, the given dataset is automatically cleaned off of spaces and is routed towards the anonymisation stage.
 
-#### 3. Anonymization
+### 3. Anonymization
 During this stage the preprocessed version of the given dataset is passed to the Amnesia REST API, along with the metadata of the identified sensitive columns. The foundation of data anonymisation in Amnesia is **generalisation hierarchies**.
 
 > Generalization hierarchies are a set of rules that define how specific values should be substituted by more general ones in the anonymisation process.
@@ -167,6 +167,8 @@ The following table provides examples of data for which k-anonymity has been ens
 
 </div>
 
+### 4. Access to produced results
+After the anonymization process has been completed, the anonymized dataset, along with other intermediately produced files can be accessed under the directory ***./batch_analyzer/src/build***.
 _________________
 
 

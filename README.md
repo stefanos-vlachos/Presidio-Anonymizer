@@ -168,22 +168,31 @@ The following table provides examples of data for which k-anonymity has been ens
 </div>
 
 ### 4. Access to produced results
-After the anonymization process has been completed, the anonymized dataset, along with other intermediately produced files can be accessed under the directory ***./batch_analyzer/src/build***.
+After the anonymization process has been completed, the anonymized dataset, along with other intermediately produced files, can be accessed under the directory ***./batch_analyzer/src/build***.
 _________________
 
-
-## User Manual
-
-### Prerequisites
-### How to use RoG?
-
 ## Contribution & Future Work
-The RoG pipeline is part of our work [RoG: A Pipeline for Automated Sensitive Data Identification and Anonymisation](https://users.uop.gr/~trifon/papers/pdf/ds4cs23-NVZVTR.pdf). This work was supported in part by project [ENIRISST+](https://enirisst-plus.gr/) under grant agreement No. MIS 5047041 from the General Secretary for ERDF & CF, under Operational Programme Competitiveness, Entrepreneurship and Innovation 2014-2020 (EPAnEK) of the Greek Ministry of Economy and Development (co-financed by Greece and the EU through the European Regional Development Fund).
+Although the proposed pipeline can be applied in big diverse datasets and to a wide range of application domains, it allows for enrichment and improvements.
 
-This work can be considered as a first step towards building a fully-featured anonymisation application, with which users will interact via a friendly interface and will be able to fully automatically and efficiently anonymise any given dataset.
+Potential future directions could be:
+* Evaluation of RoG using existing tools like [SECRETA](https://users.uop.gr/~poulis/SECRETA/PDF/EDBT2014.pdf)
+* Incorporation of more advanced NLP techniques to identify more complex and varied entities and improve the accuracy
+* Training custom models for entity detection would further enhance the effectiveness of the process, making it more flexible and customisable
+* Implementation of distributed processing could further reduce the time required for sensitive data identification and anonymisation in large datasets
+* An intuitive user interface (UI) could be developed; such an interface would simplify the process of selecting pre-built models, uploading datasets, and viewing the results of sensitive data identification and anonymisation
 
+_________________
+## Aknowledgements 
+The RoG pipeline is part of our work [RoG: A Pipeline for Automated Sensitive Data Identification and Anonymisation](https://users.uop.gr/~trifon/papers/pdf/ds4cs23-NVZVTR.pdf) which was presented in the [IEEE CSR 2023 Conference](https://www.ieee-csr.org/). This work was supported in part by project [ENIRISST+](https://enirisst-plus.gr/) under grant agreement No. MIS 5047041 from the General Secretary for ERDF & CF, under Operational Programme Competitiveness, Entrepreneurship and Innovation 2014-2020 (EPAnEK) of the Greek Ministry of Economy and Development (co-financed by Greece and the EU through the European Regional Development Fund).
+
+_________________
 ## Find us:
 * **Sotirios Nikoletos:** [E-mail](sothrhsn@hotmail.com)
+* **Stefanos Vlachos** [E-mail](stevenvlaxos@gmail.com)
+* **Efstathios Zaragkas** [E-mail](dit2203dsc@go.uop.gr)
+* **Costas Vassilakis** [E-mail](costas@go.uop.gr)
+* **Christos Tryfonopoulos** [E-mail](trifon@go.uop.gr)
+* **Paraskevi Raftopoulou** [E-mail](praftop@go.uop.gr)
 
 
 

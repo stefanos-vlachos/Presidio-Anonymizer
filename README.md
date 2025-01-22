@@ -184,15 +184,3 @@ Potential future directions could be:
 _________________
 ## Aknowledgements 
 The RoG pipeline is part of our work [RoG: A Pipeline for Automated Sensitive Data Identification and Anonymisation](https://users.uop.gr/~trifon/papers/pdf/ds4cs23-NVZVTR.pdf) which was presented in the [IEEE CSR 2023 Conference](https://www.ieee-csr.org/). This work was supported in part by project [ENIRISST+](https://enirisst-plus.gr/) under grant agreement No. MIS 5047041 from the General Secretary for ERDF & CF, under Operational Programme Competitiveness, Entrepreneurship and Innovation 2014-2020 (EPAnEK) of the Greek Ministry of Economy and Development (co-financed by Greece and the EU through the European Regional Development Fund).
-
-_________________
-## Find us:
-* **Sotirios Nikoletos:** [E-mail](sothrhsn@hotmail.com)
-* **Stefanos Vlachos** [E-mail](stevenvlaxos@gmail.com)
-* **Efstathios Zaragkas** [E-mail](dit2203dsc@go.uop.gr)
-* **Costas Vassilakis** [E-mail](costas@go.uop.gr)
-* **Christos Tryfonopoulos** [E-mail](trifon@go.uop.gr)
-* **Paraskevi Raftopoulou** [E-mail](praftop@go.uop.gr)
-
-
-
